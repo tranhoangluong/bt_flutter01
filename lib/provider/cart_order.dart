@@ -1,4 +1,5 @@
 import 'package:bt_flutter01/model/product_item.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final List<ProductItem> orderProductsList = [];
@@ -23,7 +24,7 @@ class CartOrderContainer extends StatefulWidget {
 
   static _CartOrderContainerState of(BuildContext context) {
     return (context
-        .dependOnInheritedWidgetOfExactType<_CardOrderInheritedWidget>())!
+            .dependOnInheritedWidgetOfExactType<_CardOrderInheritedWidget>())!
         .data;
   }
 
@@ -32,9 +33,14 @@ class CartOrderContainer extends StatefulWidget {
 }
 
 class _CartOrderContainerState extends State<CartOrderContainer> {
-  final List<ProductItem> _items = orderProductsList;
+  final List<ProductItem> _items = [];
+  final List<ProductItem> _selectedItems = [];
+
+  bool isDeleteMode = false;
 
   List<ProductItem> get cartItems => _items;
+
+  List<ProductItem> get selectedItems => _selectedItems;
 
   double get totalPrice {
     double total = 0;
@@ -48,7 +54,9 @@ class _CartOrderContainerState extends State<CartOrderContainer> {
   void addToCart(ProductItem orderProduct) {
     setState(() {
       final productIndex = _items.indexWhere((e) => e.id == orderProduct.id);
-      print(orderProduct.name);
+      if (kDebugMode) {
+        print(orderProduct.name);
+      }
       if (productIndex < 0) {
         _items.add(orderProduct);
       } else {
@@ -68,6 +76,43 @@ class _CartOrderContainerState extends State<CartOrderContainer> {
         _items.removeAt(productIndex);
       }
     });
+  }
+
+  void toggleSelected(ProductItem orderProduct) {
+    setState(() {
+      final productIndex = _selectedItems.indexWhere((e) => e.id == orderProduct.id);
+      if (productIndex < 0) {
+        _selectedItems.add(orderProduct);
+      } else {
+        _selectedItems.removeWhere((e) => e.id == orderProduct.id);
+      }
+    });
+  }
+
+  void deleteSelected() {
+    setState(() {
+      for (var element in _selectedItems) {
+        _items.removeWhere((e) => e.id == element.id);
+      }
+      _selectedItems.clear();
+    });
+  }
+
+  void undoDelete(List<ProductItem> _oldSelectedItems){
+    setState(() {
+      _items.addAll(_oldSelectedItems);
+      _selectedItems.addAll(_oldSelectedItems);
+    });
+  }
+
+  void toggleDeleteMode() {
+    setState(() {
+      isDeleteMode = !isDeleteMode;
+    });
+  }
+
+  bool isSelected(ProductItem orderProduct) {
+    return _selectedItems.indexWhere((e) => e.id == orderProduct.id) >= 0;
   }
 
   @override

@@ -8,8 +8,10 @@ class CartOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cartItems = CartOrderContainer.of(context).cartItems;
-    final totalPrice = CartOrderContainer.of(context).totalPrice;
+    var cartOrder = CartOrderContainer.of(context);
+
+    final cartItems = cartOrder.cartItems;
+    final totalPrice = cartOrder.totalPrice;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,48 +25,80 @@ class CartOrderScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  const Expanded(
-                    flex: 1,
-                    child: Text(
-                      'Total',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 6,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                            '\$$totalPrice',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
+                  // const Expanded(
+                  //   flex: 1,
+                  //   child: Text(
+                  //     'Total',
+                  //     style: TextStyle(fontSize: 20),
+                  //   ),
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          '\$$totalPrice',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 5),
-                        ElevatedButton(
-                          child: const Text(
-                            'ORDER NOW',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.blue,
-                            ),
+                      ),
+                      const SizedBox(width: 5),
+                      ElevatedButton(
+                        child: const Text(
+                          'ORDER NOW',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
                           ),
-                          onPressed: () {},
-                        )
-                      ],
-                    ),
+                        ),
+                        onPressed: () {},
+                      ),
+                      const SizedBox(width: 5),
+                      OutlinedButton(
+                        onPressed: () {
+                          if (cartOrder.isDeleteMode) {
+                            if (cartOrder.selectedItems.isEmpty) {
+                              cartOrder.toggleDeleteMode();
+                              return;
+                            }
+                            final selectedItems = [...cartOrder.selectedItems];
+                            cartOrder.deleteSelected();
+                            cartOrder.toggleDeleteMode();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text('Deleted selected items'),
+                              action: SnackBarAction(
+                                  label: 'Undo',
+                                  onPressed: () {
+                                    cartOrder.undoDelete(selectedItems);
+                                    cartOrder.toggleDeleteMode();
+                                  }),
+                            ));
+                          } else {
+                            cartOrder.toggleDeleteMode();
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                            side: const BorderSide(
+                          width: 2,
+                          color: Colors.red,
+                        )),
+                        child: Text(
+                          cartOrder.isDeleteMode ? 'Delete Selected' : 'Delete',
+                          style:
+                              const TextStyle(fontSize: 13, color: Colors.red),
+                        ),
+                      )
+                    ],
                   )
                 ],
               ),
@@ -79,6 +113,12 @@ class CartOrderScreen extends StatelessWidget {
                   return Card(
                     child: Row(
                       children: [
+                        if (cartOrder.isDeleteMode)
+                          Checkbox(
+                              value: cartOrder.isSelected(cartItems[index]),
+                              onChanged: (value) {
+                                cartOrder.toggleSelected(cartItems[index]);
+                              }),
                         Container(
                           margin: const EdgeInsets.all(5),
                           alignment: Alignment.center,
@@ -105,10 +145,7 @@ class CartOrderScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Total: \$' +
-                                    (cartItems[index].price *
-                                            cartItems[index].quantity)
-                                        .toString(),
+                                'Total: \$${cartItems[index].price * cartItems[index].quantity}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 14,
@@ -134,7 +171,7 @@ class CartOrderScreen extends StatelessWidget {
                                   )),
                               const SizedBox(width: 5),
                               Text(
-                                'x' + cartItems[index].quantity.toString(),
+                                'x${cartItems[index].quantity}',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 16,
