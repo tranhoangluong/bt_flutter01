@@ -1,4 +1,5 @@
 import 'package:bt_flutter01/main.dart';
+import 'package:bt_flutter01/screen/order_screen.dart';
 import 'package:bt_flutter01/screen/product_list_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class DrawerMenu extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacementNamed(
                   context, ProductListScreen.routeName);
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
           ),
           ListTile(
@@ -28,9 +29,16 @@ class DrawerMenu extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacementNamed(
                   context, ShopProductListScreen.routeName);
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
-          )
+          ),
+          ListTile(
+            title: const Text('Order List'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, OrderScreen.routeName);
+              // Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );

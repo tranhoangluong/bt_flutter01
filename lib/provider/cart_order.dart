@@ -80,7 +80,8 @@ class _CartOrderContainerState extends State<CartOrderContainer> {
 
   void toggleSelected(ProductItem orderProduct) {
     setState(() {
-      final productIndex = _selectedItems.indexWhere((e) => e.id == orderProduct.id);
+      final productIndex =
+          _selectedItems.indexWhere((e) => e.id == orderProduct.id);
       if (productIndex < 0) {
         _selectedItems.add(orderProduct);
       } else {
@@ -98,7 +99,7 @@ class _CartOrderContainerState extends State<CartOrderContainer> {
     });
   }
 
-  void undoDelete(List<ProductItem> _oldSelectedItems){
+  void undoDelete(List<ProductItem> _oldSelectedItems) {
     setState(() {
       _items.addAll(_oldSelectedItems);
       _selectedItems.addAll(_oldSelectedItems);
@@ -113,6 +114,14 @@ class _CartOrderContainerState extends State<CartOrderContainer> {
 
   bool isSelected(ProductItem orderProduct) {
     return _selectedItems.indexWhere((e) => e.id == orderProduct.id) >= 0;
+  }
+
+  void clearCart() {
+    setState(() {
+      isDeleteMode = false;
+      _items.clear();
+      _selectedItems.clear();
+    });
   }
 
   @override

@@ -1,14 +1,18 @@
 import 'package:bt_flutter01/provider/cart_order.dart';
+import 'package:bt_flutter01/provider/order.dart';
 import 'package:bt_flutter01/provider/product.dart';
 import 'package:bt_flutter01/screen/auth_screen.dart';
 import 'package:bt_flutter01/screen/cart_order_screen.dart';
+import 'package:bt_flutter01/screen/order_screen.dart';
 import 'package:bt_flutter01/screen/product_detail_screen.dart';
 import 'package:bt_flutter01/screen/product_list_screen.dart';
 import 'package:bt_flutter01/screen/shop_product_update.dart';
 import 'package:bt_flutter01/widget/drawer_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'model/product_item.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -16,32 +20,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CartOrderContainer(
-      child: ProductContainer(
-        child: MaterialApp(
-          title: 'Material App',
-          home: const ProductListScreen(),
-          debugShowCheckedModeBanner: false,
-          locale: const Locale('en', 'US'),
-          routes: {
-            // static router
-            // '/': (_) => HomePage(), // You can also use MaterialApp's `home` property instead of '/'
-            AuthScreenPage.routeName: (context) =>
-            const AuthScreenPage(), // No way to pass an argument to FooPage.
-            ShopProductListScreen.routeName: (context) =>
-            const ShopProductListScreen(),
-            ProductListScreen.routeName: (context) => const ProductListScreen(),
-            ProductDetailScreen.routeName: (context) =>
-            const ProductDetailScreen(),
-            CartOrderScreen.routeName: (context) => const CartOrderScreen(),
-          },
-          onGenerateRoute: generateRoute, // generate router
-          onUnknownRoute: (settings) => MaterialPageRoute(
-            builder: (context) => const Text('Unknown route'),
+    return ChangeNotifierProvider<OrderProvider>(
+        create: (BuildContext context) {
+          return OrderProvider();
+        },
+        child: CartOrderContainer(
+          child: ProductContainer(
+            child: MaterialApp(
+              title: 'Material App',
+              home: const ProductListScreen(),
+              debugShowCheckedModeBanner: false,
+              locale: const Locale('en', 'US'),
+              routes: {
+                // static router
+                // '/': (_) => HomePage(), // You can also use MaterialApp's `home` property instead of '/'
+                AuthScreenPage.routeName: (context) => const AuthScreenPage(),
+                // No way to pass an argument to FooPage.
+                ShopProductListScreen.routeName: (context) =>
+                    const ShopProductListScreen(),
+                ProductListScreen.routeName: (context) =>
+                    const ProductListScreen(),
+                ProductDetailScreen.routeName: (context) =>
+                    const ProductDetailScreen(),
+                CartOrderScreen.routeName: (context) => const CartOrderScreen(),
+                OrderScreen.routeName: (context) => const OrderScreen(),
+              },
+              onGenerateRoute: generateRoute,
+              // generate router
+              onUnknownRoute: (settings) => MaterialPageRoute(
+                builder: (context) => const Text('Unknown route'),
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -59,6 +70,7 @@ class MyApp extends StatelessWidget {
 
 class ShopProductListScreen extends StatefulWidget {
   static const routeName = '/shop-product-list';
+
   const ShopProductListScreen({Key? key}) : super(key: key);
 
   @override
@@ -144,7 +156,7 @@ class _ShopProductListScreenState extends State<ShopProductListScreen> {
                   ]));
             },
             separatorBuilder: (BuildContext context, int index) =>
-            const Divider(),
+                const Divider(),
             itemCount: items.length));
   }
 }

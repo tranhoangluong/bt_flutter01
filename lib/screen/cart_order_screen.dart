@@ -1,5 +1,8 @@
 import 'package:bt_flutter01/provider/cart_order.dart';
+import 'package:bt_flutter01/screen/order_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:bt_flutter01/provider/order.dart';
 
 class CartOrderScreen extends StatelessWidget {
   static const routeName = 'cart-order-products';
@@ -61,7 +64,13 @@ class CartOrderScreen extends StatelessWidget {
                             color: Colors.blue,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Provider.of<OrderProvider>(context, listen: false)
+                              .addOrder(cartItems);
+                          cartOrder.clearCart();
+                          Navigator.of(context)
+                              .popAndPushNamed(OrderScreen.routeName);
+                        },
                       ),
                       const SizedBox(width: 5),
                       OutlinedButton(

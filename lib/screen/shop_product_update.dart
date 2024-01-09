@@ -14,7 +14,7 @@ class ShopProductUpdateScreen extends StatefulWidget {
 
 class _ShopProductUpdateScreenState extends State<ShopProductUpdateScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _imageControler = TextEditingController();
+  final _imageController = TextEditingController();
   final Map<String, dynamic> _initValues = {
     'id': -1,
     'name': '',
@@ -33,7 +33,7 @@ class _ShopProductUpdateScreenState extends State<ShopProductUpdateScreen> {
 
   @override
   void dispose() {
-    _imageControler.dispose();
+    _imageController.dispose();
     super.dispose();
   }
 
@@ -53,7 +53,7 @@ class _ShopProductUpdateScreenState extends State<ShopProductUpdateScreen> {
     _initValues['description'] = item?.description;
     _initValues['image'] = item?.image;
     if (item?.image != null) {
-      _imageControler.text = item!.image;
+      _imageController.text = item!.image;
     }
   }
 
@@ -128,7 +128,7 @@ class _ShopProductUpdateScreenState extends State<ShopProductUpdateScreen> {
                     ),
                     const SizedBox(height: 10),
                     ImageFormField(
-                        imageController: _imageControler,
+                        imageController: _imageController,
                         onSaved: (String? value) {
                           _initValues['image'] = value ?? '';
                         })
